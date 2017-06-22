@@ -1,0 +1,111 @@
+imports:
+- {cloudify: 'http://www.getcloudify.org/spec/cloudify/3.4/types.yaml'}
+tosca_definitions_version: cloudify_dsl_1_3
+node_templates:
+  map_n.1497472592221.1_map:
+    type: dcae.nodes.MicroService.cdap
+    properties:
+      app_config: {description: null, eventFactory: null, monitorThreads: null, name: null,
+        postEPConfig: null, preEPConfig: null, ruleKeyPattern: null, startNoChannels: null}
+      app_preferences: {cep.map.vMOG.json: '{"catalogs": ["com.att.gfp.dcae.eventProcessor.Catalog"],"channels":[{
+          "name":"DCAE-UCSNMP-COLLECTOR","type":"in","class":"HpCambriaInputStream","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"DCAE-COLLECTOR-UCSNMP","cambria.group":"DCAE-dev-vm-cdap_${user.name}","cambria.instance":"0","phase":"snmp_map"},{"name":"CDAP_MAP_OUT","type":"out","class":"HpCambriaOutputStream","stripHpId":"true","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"CDAP_MAP_OUT"}],"processing":[{"phase":"snmp_map","filter":{"class":"StartsWith","string":"${notify
+          OID}","value":".1.3.6.1.4.1.26878.200.2"},"processors":[{"class":"Set","updates":{"parserType":"snmp_vPCRF_MOG"}},{"class":"SnmpConvertor","array":"varbinds","keycolumn":"varbind_oid","datacolumn":"varbind_value"},{"class":"RunPhase","phase":"vPCRF_MOGParsingPhase"}]},{"phase":"vPCRF_MOGParsingPhase","processors":[{"class":"MapAlarmValues","field":"_1_3_6_1_4_1_26878_100_1_1_9","toField":"eventGroup","map":{"LinkDown":"LinkUp_Down","LinkUp":"LinkUp_Down","HIGH
+          CPU USAGE Alert":"HighCpuUsageAlert-Clear","HIGH CPU USAGE Clear":"HighCpuUsageAlert-Clear","ProcessDown":"ProcessUp-Down","ProcessUp":"ProcessUp-Down","HighLoadAlert":"HighLoadAlert-Clear","HighLoadClear":"HighLoadAlert-Clear","DiskFullAlert":"DiskFullAlert-Clear","DiskFullClear":"DiskFullAlert-Clear","LowSwapAlert":"LowMemoryAlert-Clear","LowSwapClear":"LowMemoryAlert-Clear","LowMemoryAlert":"LowMemoryAlert-Clear","LowMemoryClear":"LowMemoryAlert-Clear","ApplicationStartError":"ApplicationStartError","LicenseUsageThresholdExceeded
+          ":"LicenseUsageThresholdExceeded ","LicensedSessionCreation":"LicensedSessionCreation","InvalidLicense":"InvalidLicense","PoliciesNotConfigured":"PoliciesNotConfigured","DiameterAllPeersDown":"DiameterAllPeersUp-Down","DiameterAllPeersUp":"DiameterAllPeersUp-Down","HA
+          Failover":"HAFailover","GR Failover":"GRFailover","All DB Member of replica
+          set Down":"AllDBMemberReplicaSetUp-Down","All DB Member of replica set Up":"AllDBMemberReplicaSetUp-Down","No
+          Primary DB Member Found":"PrimaryDBMemberFound-NotFound","Primary DB Member
+          Found":"PrimaryDBMemberFound-NotFound","Secondary DB Member Down":"SecondaryDBMemberUp-Down","Secondary
+          DB Member Up":"SecondaryDBMemberUp-Down","Arbiter Down":"ArbiterUp-Down","Arbiter
+          Up":"ArbiterUp-Down","DB resync is needed":"DBResyncNeeded-NotNeeded","DB
+          resync is not needed":"DBResyncNeeded-NotNeeded","Config Server Down":"ConfigServerUp-Down","Config
+          Server Up":"ConfigServerUp-Down","VM Down":"VMUp-Down","VM Up":"VMUp-Down","QNS
+          Process Down":"QNSProcessUp-Down","QNS Process Up":"QNSProcessUp-Down","VirtualInterface
+          Down":"VirtualInterfaceUp-Down","VirtualInterface Up":"VirtualInterfaceUp-Down","MemcachedConnectError":"MemcachedConnectError","PolicyConfiguration":"PolicyConfiguration","DiameterPeerDown":"DiameterPeerDown","DeveloperMode":"DeveloperMode","ZeroMQConnectionError":"ZeroMQConnectionError","Admin
+          User Logged In":"AdminUserLoggedIn"}},{"class":"Set","updates":{"event.commonEventHeader.domain":"fault","event.commonEventHeader.version":"0.1","event.faultFields.version":"1.2","event.faultFields.vfStatus":"0.1","event.commonEventHeader.priority":"normal","event.commonEventHeader.sequence":"0","event.faultFields.alarmCondition":"${_1_3_6_1_4_1_26878_100_1_1_9}"}},{"class":"MapAlarmValues","field":"_1_3_6_1_4_1_26878_100_1_4","default":"WARNING","toField":"event.faultFields.eventSeverity","map":{"0":"CRITICAL","1":"CRITICAL","2":"MAJOR","3":"MAJOR","4":"MINOR","5":"WARNING","6":"WARNING","7":"WARNING","8":"WARNING","9":"NORMAL"}},{"class":"MapAlarmValues","field":"_1_3_6_1_4_1_26878_100_1_3","default":"","toField":"event.faultFields.specificProblem","map":{"0":"Hardware","1":"Networking","2":"Virtualization","3":"Operating
+          System","4":"Application","5":"Process"}},{"class":"Set","updates":{"event.commonEventHeader.lastEpochMicrosec":"${event.commonEventHeader.startEpochMicrosec}"}}]},{"phase":"vPCRF_MOGParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DiskFullAlert","LowSwapAlert","LowMemoryAlert"]},"processors":[{"class":"Set","updates":{"event.faultFields.eventSeverity":"MAJOR"}}]},{"phase":"vPCRF_MOGParsingPhase","filter":{"class":"Contains","string":"${_1_3_6_1_4_1_26878_100_1_1_10}","value":"MOG"},"processors":[{"class":"ExtractText","field":"event.commonEventHeader.sourceName","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":"([^:]*):.*"},{"class":"Set","updates":{"event.faultFields.eventSourceType":"vMOG","event.commonEventHeader.eventType":"vMoG_Alarms","event.commonEventHeader.eventId":"${event.commonEventHeader.sourceName}_${eventGroup}"}}]},{"phase":"vPCRF_MOGParsingPhase","filter":{"class":"Not","filter":{"class":"Contains","string":"${_1_3_6_1_4_1_26878_100_1_1_10}","value":"MOG"}},"processors":[{"class":"Set","updates":{"event.commonEventHeader.sourceName":"${agent
+          address}","event.faultFields.eventSourceType":"vPCRF","event.commonEventHeader.eventType":"PCRF_Alarms","event.commonEventHeader.eventId":"${agent
+          address}_${eventGroup}","event.commonEventHeader.reportingEntityName":"${event.commonEventHeader.sourceName}"}}]},{"phase":"vPCRF_MOGParsingPhase","filter":{"class":"Contains","string":"${_1_3_6_1_4_1_26878_100_1_1_7}","value":"MOGX"},"processors":[{"class":"Set","updates":{"event.faultFields.alarmCondition":"${_1_3_6_1_4_1_26878_100_1_1_10}","event.faultFields.specificProblem":"${_1_3_6_1_4_1_26878_100_1_1_9}","event.commonEventHeader.reportingEntityName":"${event.commonEventHeader.sourceName}"}},{"class":"RunPhase","phase":"vPCRF_MOGX_ParsingPhase"},{"class":"Set","updates":{"event.eventHeader.eventId":"${event.eventHeader.eventSourceName}_${eventGroup}_${eventKey}"}}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["LinkDown","LinkUp"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          (.*)"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["ProcessDown","ProcessUp"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*:(.*)
+          process.*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DiskFullAlert","DiskFullClear"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*:(.*):.*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["QNS
+          Process Down","QNS Process Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*:(.*)
+          server on .*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DiameterPeerDown"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          (.*) [R/r]ealm.*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DiameterAllPeersDown"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*Realm:
+          (.*):[^:]*peers.*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["VirtualInterface
+          Down"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*onnect
+          (.*). Not reachable"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["VirtualInterface
+          Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*:
+          (.*) is up"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["GR
+          Failover"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*:
+          (Geo Failover done from .*) of .*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["Arbiter
+          Down","Arbiter Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          Arbiter (.*) is .*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["All
+          DB Member of replica set Down","All DB Member of replica set Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          All DB members of replica set (.*) are .*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["No
+          Primary DB Member Found","Primary DB Member Found"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          Replica-set (.*)"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DB
+          Member Down","DB Member Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          (DB.Member .*) of SET .*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["Secondary
+          DB Member Down","Secondary DB Member Up"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*Secondary
+          (DB.*) is.*"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["DB
+          Resync is needed","DB Resync is not needed"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          member (.*:[0-9]+).*$"}]},{"phase":"vPCRF_MOGX_ParsingPhase","filter":{"class":"OneOf","field":"_1_3_6_1_4_1_26878_100_1_1_9","values":["ZeroMQConnectionError"]},"processors":[{"class":"ExtractText","field":"eventKey","value":"${_1_3_6_1_4_1_26878_100_1_1_10}","regex":".*
+          for (tcp.*)"}]},{"phase":"vPCRF_MOGParsingPhase","processors":[{"class":"Clear","fields":["community
+          len","cambria.partition","notify OID","notify OID len","epoch_serno","protocol
+          version","agent name","trap category","community","time received","agent
+          address","varbinds"]},{"class":"ClearNoneStandardFields","reservedFields":["event","parserType"]},{"class":"LogEvent","title":"UCSNMPEvent-vPCRF_MOG_Parser_Output","logName":"com.att.gfp.dcae.eventProcessor.output","logLevel":"DEBUG"},{"class":"LogText","logLevel":"INFO","logText":"Finished_vPCRF_MOGParsingPhase
+          Mapping Phase"},{"class":"RunPhase","phase":"map_publish"}]}]}'}
+      artifact_name: dcae-event-proc-cdap-map
+      artifact_version: 1.0.0
+      jar_url: null
+      location_id: &id001
+        get_property: [SELF, composition, location_id]
+      namespace: event_proc_map
+      programs:
+      - {program_id: mapMSWorker, program_type: workers}
+      service_component_type: cdap_app_map
+      service_id: &id002
+        get_property: [SELF, composition, service_id]
+      streamname: Our output stream name
+  enrich_n.1497472590332.0_enrich:
+    type: dcae.nodes.MicroService.cdap
+    properties:
+      app_config: {description: Enrich Microservice, eventFactory: '', monitorThreads: true,
+        name: enrichMS, postEPConfig: '{"processing":[{"phase":"enrich_publish","processors":[{"class":"SendEvent","channel":"DCAE-ENRICH-EVENT-OUT"}]}]}',
+        preEPConfig: '{"catalogs": ["com.att.sa.highlandPark.topoTools.HpTopoDbObjectCatalog","com.att.sa.highlandPark.topoTools.HpTopoDbProcessors"],"objects":
+          [{"flatironHosts": ["199.37.245.28","199.37.245.23","199.37.245.27"],"scope":
+          "dcae","name": "topoDb","class": "TopoDb"}],"channels":[{ "name":"DCAE-SUPPLEMENT-EVENT-OUT","type":"in","class":"HpCambriaInputStream","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"DCAE-SUPPLEMENT-EVENT-OUT","cambria.group":"DCAE-dev-vm-cdap_${user.name}","cambria.instance":"0","phase":"snmp_enrich"},{"name":"DCAE-ENRICH-EVENT-OUT","type":"out","class":"HpCambriaOutputStream","stripHpId":"true","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"DCAE-ENRICH-EVENT-OUT"}]}',
+        ruleKeyPattern: cep.enrich.*.json, startNoChannels: false}
+      app_preferences: {cep.enrich.vMOG.json: '{"catalogs": ["com.att.gfp.dcae.eventProcessor.Catalog","com.att.sa.highlandPark.topoTools.HpTopoDbObjectCatalog","com.att.sa.highlandPark.topoTools.HpTopoDbProcessors"],"objects":
+          [{"flatironHosts": ["199.37.245.28","199.37.245.23","199.37.245.27"],"scope":
+          "dcae","name": "topoDb","class": "TopoDb"}],"channels":[{ "name":"CDAP_SUPPL_OUT","type":"in","class":"HpCambriaInputStream","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"CDAP_SUPPL_OUT","cambria.group":"DCAE-dev-vm-cdap_${user.name}","cambria.instance":"0","phase":"snmp_enrich"},{"name":"CDAP_ENRICH_OUT","type":"out","class":"HpCambriaOutputStream","stripHpId":"true","cambria.url":"199.37.245.28,199.37.245.23,199.37.245.27","cambria.topic":"CDAP_ENRICH_OUT"}],"processing"
+          :[{"phase" : "snmp_enrich","filter" : {"class" : "And","filters" :[{"class"
+          : "Assigned","field" : "event.eventHeader.eventSourceName","emtpyIsAssigned"
+          : false}, {"class" : "NotEqual","field" : "${isEnriched}","value" : "true"}]},"processors"
+          :[{"class" : "StringTransform","value" : "${event.eventHeader.eventSourceName}","toField"
+          : "searchString","targetCase" : "lower"}, {"class" : "LogText","logLevel"
+          : "INFO","logText" : "Alarm_Enrichment Starting for ${hp.tag}"}, {"class"
+          : "TopoSearch","searchField" : "oid","searchValue" : "${searchString}","updates"
+          : {"event.commonEventHeader.sourceName" : "${ptnii_name}","event.commonEventHeader.sourceId"
+          : "${vserver_id}","event.commonEventHeader.reportingEntityName" : "${vnf_name}","event.commonEventHeader.reportingEntityId"
+          : "${vnf_id}","event.commonEventHeader.internalHeaderFields.equipmentType"
+          : "${equip_type}","event.commonEventHeader.internalHeaderFields.provStatus"
+          : "${prov_status}","event.commonEventHeader.internalHeaderFields.inMaint"
+          : "${in_maint}","event.commonEventHeader.internalHeaderFields.tenantName"
+          : "${tenant_name}","event.commonEventHeader.internalHeaderFields.eventSourceHostname"
+          : "${hostname}","isEnriched" : true}}, {"class" : "Set","updates" : {"event.preCorrelationAging"
+          : "${preCorrelationAging}","event.prepublishAging" : "${prepublishAging}"}},
+          {"class" : "Clear","fields" : ["searchString"]}, {"class" : "EventTypeUpdater"},
+          {"class" : "Set","updates" : {"event.faultFields.eventSourceType" : "${event.eventHeader.eventType}"}},
+          {"class" : "Set","updates" : {"event.eventHeader.eventType" : "${event.eventHeader.eventType}-Alarm"}},{
+          "class":"RunPhase", "phase":"enrich_publish" }]}]}'}
+      artifact_name: dcae-event-proc-cdap-enrich
+      artifact_version: 1.0.0
+      jar_url: null
+      location_id: *id001
+      namespace: event_proc_enrich
+      programs:
+      - {program_id: enrichMSWorker, program_type: workers}
+      service_component_type: cdap_app_enrich
+      service_id: *id002
+      streamname: Our output stream name
